@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ public class MoviesBaseAdapter extends BaseAdapter {
 
     private Context mContext;
     private ArrayList<MovieData> mDataList;
+
 
     public static class MovieData {
         String title;       // movie title
@@ -48,7 +50,7 @@ public class MoviesBaseAdapter extends BaseAdapter {
         // return hashcode
         return mDataList.get(position).hashCode();
     }
-
+    ImageView thumbnail;
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -67,6 +69,11 @@ public class MoviesBaseAdapter extends BaseAdapter {
             // append ratings
             TextView ratings = (TextView) convertView.findViewById(R.id.ratings);
             ratings.append(mDataList.get(position).ratings);
+
+            thumbnail = (ImageView) convertView.findViewById(R.id.thumbnail);
+
+            DownloadThread thread = new DownloadThread(mDataList.get(position).thumbnail, thumbnail);
+            thread.start();
         }
 
         return convertView;
