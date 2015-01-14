@@ -7,10 +7,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.example.felixchen.accessmovies.MoviesBaseAdapter.MovieData;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -59,9 +61,9 @@ public class MainActivity extends ActionBarActivity {
         moviesList = (ListView) findViewById(R.id.list_movies);
     }
 
-    private void refreshMoviesList(String[] movieTitles)
+    private void refreshMoviesList(ArrayList<MovieData> arrayLists)
     {
-        moviesList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, movieTitles));
+        moviesList.setAdapter(new MoviesBaseAdapter(this, arrayLists));
     }
 
     private class RequestTask extends AsyncTask<String, String, String>
@@ -120,27 +122,40 @@ public class MainActivity extends ActionBarActivity {
 
                     // add each movie's title to an array
                     String[] movieTitles = new String[movies.length()];
+
+                    // create an movie data
+                    ArrayList<MovieData> movieDataList = new ArrayList<MovieData>();
+
                     for (int i = 0; i < movies.length(); i++)
                     {
+                        MovieData movieData = new MovieData();
+
                         JSONObject movie = movies.getJSONObject(i);
                         movieTitles[i] = movie.getString("title");
+                        movieData.title = movie.getString("title");
 
                         Log.d(LOG_TAG, "title: " + movie.getString("title"));
 
-                        // print movie year
+                        // assign movie year to movieData
                         Log.d(LOG_TAG, "year: " + movie.getString("year"));
-                        // print movie
+                        movieData.year = movie.getString("year");
+
+                        // assign movie ratings to movieData
                         JSONObject ratings = movie.getJSONObject("ratings");
-
                         Log.d(LOG_TAG, "ratings: " + ratings.getString("audience_score"));
+                        movieData.ratings = ratings.getString("audience_score");
 
+                        // assign movie thumbnail url to movieData
                         JSONObject thumbnail = movie.getJSONObject("posters");
-
                         Log.d(LOG_TAG, "thumbnail: "+ thumbnail.getString("thumbnail"));
+                        movieData.thumbnail = thumbnail.getString("thumbnail");
+
+                        movieDataList.add(movieData);
                     }
+                    Log.d(LOG_TAG, "movie list size= "+ movieDataList.size());
 
                     // update the UI
-                    refreshMoviesList(movieTitles);
+                    refreshMoviesList(movieDataList);
                 }
                 catch (JSONException e)
                 {
