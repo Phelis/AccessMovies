@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import com.example.felixchen.accessmovies.MoviesBaseAdapter.MovieData;
+
 import java.io.InputStream;
 import java.net.URL;
 
@@ -12,23 +14,32 @@ import java.net.URL;
  */
 public class DownloadThread extends Thread {
     private ImageView mImageView;
-    private String mURL;
+    private MovieData mMovieData;
+    private Bitmap mBitmap;
 
-    public DownloadThread(String url, ImageView imageView) {
+    public DownloadThread(MovieData data, ImageView imageView) {
         mImageView = imageView;
-        mURL = url;
+        mMovieData = data;
+
+        // start run()
+        this.start();
+    }
+
+    public Bitmap getBitmap() {
+        return mBitmap;
     }
 
     @Override
     public void run() {
         super.run();
+        synchronized (this) {
+            try {
+                mBitmap = BitmapFactory.decodeStream((InputStream) new URL(mMovieData.url).getContent());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        try{
-            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(mURL).getContent());
-            mImageView.setImageBitmap(bitmap);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            this.notify();
         }
     }
 }

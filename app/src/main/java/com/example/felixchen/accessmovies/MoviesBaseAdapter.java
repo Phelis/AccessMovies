@@ -1,6 +1,7 @@
 package com.example.felixchen.accessmovies;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,8 @@ public class MoviesBaseAdapter extends BaseAdapter {
         String title;       // movie title
         String year;        // movie year
         String ratings;     // movie ratings
-        String thumbnail;   // movie thumbnail
+        String url;         // movie url
+        Bitmap thumbnail;   // movie thumbnail
     }
 
     public MoviesBaseAdapter(Context context, ArrayList<MovieData> dataList) {
@@ -50,7 +52,7 @@ public class MoviesBaseAdapter extends BaseAdapter {
         // return hashcode
         return mDataList.get(position).hashCode();
     }
-    ImageView thumbnail;
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -58,24 +60,36 @@ public class MoviesBaseAdapter extends BaseAdapter {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             convertView = (LinearLayout) inflater.inflate(R.layout.movie_item, null);
-            // append title
-            TextView title = (TextView) convertView.findViewById(R.id.title);
-            title.append(mDataList.get(position).title);
-
-            // append year
-            TextView year = (TextView) convertView.findViewById(R.id.year);
-            year.append(mDataList.get(position).year);
-
-            // append ratings
-            TextView ratings = (TextView) convertView.findViewById(R.id.ratings);
-            ratings.append(mDataList.get(position).ratings);
-
-            thumbnail = (ImageView) convertView.findViewById(R.id.thumbnail);
-
-            DownloadThread thread = new DownloadThread(mDataList.get(position).thumbnail, thumbnail);
-            thread.start();
         }
 
+        // append title
+        TextView title = (TextView) convertView.findViewById(R.id.title);
+        title.setText("title: "+ mDataList.get(position).title);
+
+        // append year
+        TextView year = (TextView) convertView.findViewById(R.id.year);
+        year.setText("year: " + mDataList.get(position).year);
+
+        // append ratings
+        TextView ratings = (TextView) convertView.findViewById(R.id.ratings);
+        ratings.setText("ratings: "+ mDataList.get(position).ratings);
+
+        ImageView thumbnail = (ImageView) convertView.findViewById(R.id.thumbnail);
+        DownloadThread thread = null;
+        if (mDataList.get(position).thumbnail == null) {
+            thread = new DownloadThread(mDataList.get(position), thumbnail);
+
+            synchronized (thread) {
+                try {
+                    thread.wait(1000);
+                    mDataList.get(position).thumbnail = thread.getBitmap();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        thumbnail.setImageBitmap(mDataList.get(position).thumbnail);
         return convertView;
     }
 }

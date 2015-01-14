@@ -36,7 +36,7 @@ public class MainActivity extends ActionBarActivity {
    // private static final String API_KEY = "test";
 
     // the number of movies you want to get in a single request to their web server
-    private static final int MOVIE_PAGE_LIMIT = 10;
+    private static final int MOVIE_PAGE_LIMIT = 50;
 
     private EditText searchBox;
     private Button searchButton;
@@ -148,7 +148,7 @@ public class MainActivity extends ActionBarActivity {
                         // assign movie thumbnail url to movieData
                         JSONObject thumbnail = movie.getJSONObject("posters");
                         // Log.d(LOG_TAG, "thumbnail: "+ thumbnail.getString("thumbnail"));
-                        movieData.thumbnail = thumbnail.getString("thumbnail");
+                        movieData.url = thumbnail.getString("thumbnail");
 
                         movieDataList.add(movieData);
                     }
