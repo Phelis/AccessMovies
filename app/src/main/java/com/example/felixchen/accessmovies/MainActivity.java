@@ -27,6 +27,8 @@ import java.io.IOException;
 
 
 public class MainActivity extends ActionBarActivity {
+    private final static String LOG_TAG = MainActivity.class.getSimpleName();
+
     // the Rotten Tomatoes API key of your application! get this from their website
     private static final String API_KEY = "ya7upksndh72bpfkyg4w74nh";
    // private static final String API_KEY = "test";
@@ -122,6 +124,19 @@ public class MainActivity extends ActionBarActivity {
                     {
                         JSONObject movie = movies.getJSONObject(i);
                         movieTitles[i] = movie.getString("title");
+
+                        Log.d(LOG_TAG, "title: " + movie.getString("title"));
+
+                        // print movie year
+                        Log.d(LOG_TAG, "year: " + movie.getString("year"));
+                        // print movie
+                        JSONObject ratings = movie.getJSONObject("ratings");
+
+                        Log.d(LOG_TAG, "ratings: " + ratings.getString("audience_score"));
+
+                        JSONObject thumbnail = movie.getJSONObject("posters");
+
+                        Log.d(LOG_TAG, "thumbnail: "+ thumbnail.getString("thumbnail"));
                     }
 
                     // update the UI
