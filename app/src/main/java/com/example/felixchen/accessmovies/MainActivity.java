@@ -134,25 +134,24 @@ public class MainActivity extends ActionBarActivity {
                         movieTitles[i] = movie.getString("title");
                         movieData.title = movie.getString("title");
 
-                        Log.d(LOG_TAG, "title: " + movie.getString("title"));
+                        // Log.d(LOG_TAG, "title: " + movie.getString("title"));
 
                         // assign movie year to movieData
-                        Log.d(LOG_TAG, "year: " + movie.getString("year"));
+                        // Log.d(LOG_TAG, "year: " + movie.getString("year"));
                         movieData.year = movie.getString("year");
 
                         // assign movie ratings to movieData
                         JSONObject ratings = movie.getJSONObject("ratings");
-                        Log.d(LOG_TAG, "ratings: " + ratings.getString("audience_score"));
+                        // Log.d(LOG_TAG, "ratings: " + ratings.getString("audience_score"));
                         movieData.ratings = ratings.getString("audience_score");
 
                         // assign movie thumbnail url to movieData
                         JSONObject thumbnail = movie.getJSONObject("posters");
-                        Log.d(LOG_TAG, "thumbnail: "+ thumbnail.getString("thumbnail"));
+                        // Log.d(LOG_TAG, "thumbnail: "+ thumbnail.getString("thumbnail"));
                         movieData.thumbnail = thumbnail.getString("thumbnail");
 
                         movieDataList.add(movieData);
                     }
-                    Log.d(LOG_TAG, "movie list size= "+ movieDataList.size());
 
                     // update the UI
                     refreshMoviesList(movieDataList);
