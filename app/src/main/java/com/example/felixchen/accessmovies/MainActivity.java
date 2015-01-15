@@ -58,12 +58,16 @@ public class MainActivity extends ActionBarActivity {
                 new RequestTask().execute("http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=" + API_KEY + "&q=" + searchBox.getText().toString().trim() + "&page_limit=" + MOVIE_PAGE_LIMIT);
             }
         });
+
         moviesList = (ListView) findViewById(R.id.list_movies);
     }
 
-    private void refreshMoviesList(ArrayList<MovieData> arrayLists)
-    {
-        moviesList.setAdapter(new MoviesBaseAdapter(this, arrayLists));
+    private void refreshMoviesList(ArrayList<MovieData> arrayLists) {
+        MoviesBaseAdapter adapter = new MoviesBaseAdapter(this, arrayLists);
+        // clean the past adapter
+        moviesList.setAdapter(null);
+        // assign the new one
+        moviesList.setAdapter(adapter);
     }
 
     private class RequestTask extends AsyncTask<String, String, String>
@@ -120,9 +124,6 @@ public class MainActivity extends ActionBarActivity {
                     // fetch the array of movies in the response
                     JSONArray movies = jsonResponse.getJSONArray("movies");
 
-                    // add each movie's title to an array
-                    String[] movieTitles = new String[movies.length()];
-
                     // create an movie data
                     ArrayList<MovieData> movieDataList = new ArrayList<MovieData>();
 
@@ -131,23 +132,17 @@ public class MainActivity extends ActionBarActivity {
                         MovieData movieData = new MovieData();
 
                         JSONObject movie = movies.getJSONObject(i);
-                        movieTitles[i] = movie.getString("title");
                         movieData.title = movie.getString("title");
 
-                        // Log.d(LOG_TAG, "title: " + movie.getString("title"));
-
                         // assign movie year to movieData
-                        // Log.d(LOG_TAG, "year: " + movie.getString("year"));
                         movieData.year = movie.getString("year");
 
                         // assign movie ratings to movieData
                         JSONObject ratings = movie.getJSONObject("ratings");
-                        // Log.d(LOG_TAG, "ratings: " + ratings.getString("audience_score"));
                         movieData.ratings = ratings.getString("audience_score");
 
                         // assign movie thumbnail url to movieData
                         JSONObject thumbnail = movie.getJSONObject("posters");
-                        // Log.d(LOG_TAG, "thumbnail: "+ thumbnail.getString("thumbnail"));
                         movieData.url = thumbnail.getString("thumbnail");
 
                         movieDataList.add(movieData);

@@ -21,6 +21,7 @@ public class MoviesBaseAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<MovieData> mDataList;
 
+    private LayoutInflater mInflater;
 
     public static class MovieData {
         String title;       // movie title
@@ -33,6 +34,7 @@ public class MoviesBaseAdapter extends BaseAdapter {
     public MoviesBaseAdapter(Context context, ArrayList<MovieData> dataList) {
         mContext = context;
         mDataList = dataList;
+        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -49,22 +51,18 @@ public class MoviesBaseAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        // return hashcode
-        return mDataList.get(position).hashCode();
+        // do nothing
+        return 0;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) mContext
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            convertView = (LinearLayout) inflater.inflate(R.layout.movie_item, null);
+            convertView = (LinearLayout) mInflater.inflate(R.layout.movie_item, null);
         }
-
         // append title
         TextView title = (TextView) convertView.findViewById(R.id.title);
-        title.setText("title: "+ mDataList.get(position).title);
+        title.setText("title: " + mDataList.get(position).title);
 
         // append year
         TextView year = (TextView) convertView.findViewById(R.id.year);
@@ -72,24 +70,19 @@ public class MoviesBaseAdapter extends BaseAdapter {
 
         // append ratings
         TextView ratings = (TextView) convertView.findViewById(R.id.ratings);
-        ratings.setText("ratings: "+ mDataList.get(position).ratings);
+        ratings.setText("ratings: " + mDataList.get(position).ratings);
 
         ImageView thumbnail = (ImageView) convertView.findViewById(R.id.thumbnail);
+
         DownloadThread thread = null;
         if (mDataList.get(position).thumbnail == null) {
             thread = new DownloadThread(mDataList.get(position), thumbnail);
 
-            synchronized (thread) {
-                try {
-                    thread.wait(1000);
-                    mDataList.get(position).thumbnail = thread.getBitmap();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            mDataList.get(position).thumbnail = thread.getBitmap();
         }
 
         thumbnail.setImageBitmap(mDataList.get(position).thumbnail);
+
         return convertView;
     }
 }

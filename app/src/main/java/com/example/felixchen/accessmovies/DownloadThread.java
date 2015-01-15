@@ -18,13 +18,20 @@ public class DownloadThread extends Thread {
     private Bitmap mBitmap;
 
     public DownloadThread(MovieData data, ImageView imageView) {
+        // give the thread name
+        setName("Download Thread");
+
         mImageView = imageView;
         mMovieData = data;
 
         // start run()
         this.start();
+
+        // wait for this thread completion
+        finishDownloading();
     }
 
+    // return a bitmap
     public Bitmap getBitmap() {
         return mBitmap;
     }
@@ -34,12 +41,24 @@ public class DownloadThread extends Thread {
         super.run();
         synchronized (this) {
             try {
+                // retrieve a bitmap from url
                 mBitmap = BitmapFactory.decodeStream((InputStream) new URL(mMovieData.url).getContent());
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             this.notify();
+        }
+    }
+
+    public void finishDownloading() {
+        synchronized (this) {
+            try {
+                // wait for three seconds
+                this.wait(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
